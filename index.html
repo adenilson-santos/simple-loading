@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Simple loading</title>
+
+  <style>
+
+    #app, .content-container{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .content-container {
+      margin-top: 20px;
+    }
+
+    /* Loading animation bellow */
+
+    .loading-animation {
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.3);
+      position: fixed;
+      z-index: 10;
+      top: 0px; right: 0;
+    }
+    
+    .loading-animation img {
+      width: 50px;
+      height: 50px;
+      animation: rotateAnimation 0.8s linear infinite;
+    }
+  
+    @keyframes rotateAnimation {
+      from {
+        transform: rotate(0deg);
+        width: 50px;
+        height: 45px;
+      }
+      to {
+        transform: rotate(360deg);
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+
+</head>
+  
+<body>
+  <div id="app">
+    <div class="form-container">
+      <input type="text" value="adenilson-santos" id="input-search">
+      <button onclick="getUser()">Search</button>
+    </div>
+  
+    <div class="content-container"></div>
+  
+    <div class="loading-container"></div>
+  </div>
+</body>
+
+<script>
+  const client = "https://api.github.com/users"
+  const loadingContainer = document.querySelector(".loading-container")
+  const contentContainer = document.querySelector(".content-container")
+
+  function getUser () {
+    showLoading()
+
+    let username = document.querySelector("#input-search").value
+
+    if (username.length == 0) return alert("Digite algum username")
+
+    fetch(`${client}/${username}`).then( response => {
+      
+      response.json().then( data => {
+        
+        showContent(data)
+        removeLoading()
+
+      }).catch(err => removeLoading())
+
+    }).catch(err => removeLoading())
+  }
+
+  function showLoading () {
+    loadingContainer.innerHTML = "<div class='loading-animation'> <img src='carregando.png' > </div>"
+  }
+
+  function removeLoading () {
+    loadingContainer.innerHTML = ""
+  }
+
+  function showContent (user) {
+    contentContainer.innerHTML = `
+      <strong>Nome: ${user.name}</strong>
+      <p>Bio: ${user.bio}</p>
+      <small>Blog: ${user.blog}</small>
+      <p>Empresa: ${user.company}</p>
+    `
+  }
+</script>
+
+</html>
